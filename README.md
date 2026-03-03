@@ -308,8 +308,14 @@ The DevSecOps lifecycle is orchestrated through the [DevSecOps Main Pipeline](.g
 
 All scan reports (OWASP, Trivy, ZAP) are uploaded as downloadable **Artifacts** in each GitHub Actions run, YOu can look into the **Artifacts**.
 
-  ![github-actions](screenshots/16.png)
+- CI/CD
 
+   ![github-actions](screenshots/16.png)
+
+- Artifacts
+
+   ![artifacts](screenshots/26.png)
+   
 ---
 
 ## Operational Verification
