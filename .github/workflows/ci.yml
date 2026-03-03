@@ -59,8 +59,7 @@ jobs:
           mvn org.owasp:dependency-check-maven:check \
             -DfailBuildOnCVSS=7 \
             -DnvdApiKey="${NVD_API_KEY}" \
-            -DsuppressionFile=suppression.xml \
-            || true
+            -DsuppressionFile=suppression.xml
 
       - name: Upload Dependency Check Report
         uses: actions/upload-artifact@v4
