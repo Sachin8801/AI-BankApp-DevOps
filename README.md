@@ -17,7 +17,7 @@ A high-performance, containerized financial platform built with Spring Boot 3, J
 
 ## Technical Architecture
 
-The application is deployed across a multi-tier, segmented AWS environment. The control plane leverages GitHub Actions for automated builds and secure deployments.
+The application is deployed across a multi-tier, segmented AWS environment. The control plane leverages GitHub Actions with integrated security gates at every stage.
 
 ```mermaid
 graph TD
@@ -50,8 +50,9 @@ graph TD
     end
 
     GH -->|1. OIDC Authentication| OIDC
-    GH -->|2. Push Container Image| ECR
+    GH -->|2. Push Scanned Image| ECR
     GH -->|3. SSH Orchestration| AppEC2
+    GH -->|4. DAST Scan| AppEC2
     
     User -->|Port 8080| AppEC2
     AppEC2 -->|JDBC Connection| RDS
@@ -59,6 +60,22 @@ graph TD
     AppEC2 -->|Runtime Secrets| Secrets
     AppEC2 -->|Pull Image| ECR
 ```
+
+---
+
+## Security Pipeline (Golden Pipeline)
+
+The CI/CD pipeline enforces **7 sequential security gates** before any code reaches production:
+
+| Gate | Name | Tool | Purpose |
+| :---: | :--- | :--- | :--- |
+| 1 | SAST | Semgrep | Scans Java source code for security flaws and OWASP Top 10 |
+| 2 | SCA | OWASP Dependency Check | Scans Maven dependencies for known CVEs |
+| 3 | Build | Maven | Compiles and packages the application |
+| 4 | Container Scan | Trivy | Scans the Docker image for OS and library vulnerabilities |
+| 5 | Push | Amazon ECR | Pushes the image only after Trivy passes |
+| 6 | Deploy | SSH / Docker Compose | Deploys the verified image to EC2 |
+| 7 | DAST | OWASP ZAP | Scans the live application for runtime web vulnerabilities |
 
 ---
 
@@ -83,8 +100,25 @@ graph TD
       ![ECR](screenshots/2.png)
 
 2. **Application Server (EC2)**:
-   - Deploy an Ubuntu 22.04 instance.
-   - Configure Security Groups to permit Port 22 (Management) and Port 8080 (Service).
+
+   - Deploy an Ubuntu 22.04 instance with below `User Data`.
+
+      ```bash
+      #!/bin/bash
+
+      sudo apt update 
+      sudo apt install -y docker.io docker-compose-v2 jq mysql-client
+      sudo usermod -aG docker ubuntu
+      sudo newgrp docker
+      sudo snap install aws-cli --classic
+      ```
+
+   - Configure Security Group to open inbound rule for Port 22 (Management) and Port 8080 (Service).
+
+      > [!NOTE]
+      > 
+      > Better to give `name` to Security Group created.
+
    - Create an IAM Instance Profile(IAM EC2 role) containing permissions:
      - `AmazonEC2ContainerRegistryPowerUser`
      - `AWSSecretsManagerClientReadOnlyAccess`
@@ -94,14 +128,14 @@ graph TD
    - Attach it to Application EC2. Select EC2 -> Actions -> Security -> Modify IAM role -> Attach created IAM role.
 
       ![IAM role](screenshots/4.png)
+   
+   - Connect to EC2 Instance and Run below command to check whether IAM role is working or not.
 
-   - Connect EC2 & Execute baseline installation:
+      ```bash
+      aws sts get-caller-identity
+      ```
 
-     ```bash
-     sudo apt update && sudo apt install -y docker.io docker-compose-v2 jq mysql-client
-     sudo usermod -aG docker $USER && newgrp docker
-     sudo snap install aws-cli --classic
-     ```
+      You will get your account details with IAM role assumed.
 
 3. **Database Tier (RDS)**:
    - Provision a MySQL 8.0 instance using the **Dev/Test** template.
@@ -117,6 +151,10 @@ graph TD
 4. **AI Engine Tier (Ollama)**:
    - Deploy a dedicated Ubuntu EC2 instance.
    - Open Inbound Port `11434` from the Application EC2 Security Group.
+   
+      > [!NOTE]
+      > 
+      > Better to give `name` to Security Group created.
     
       ![ollama-sg](screenshots/8.png)
 
@@ -124,9 +162,17 @@ graph TD
     
       ![user-data](screenshots/9.png)
 
+   - Verify the AI engine is responsive and the model is pulled in `AI engine EC2`:
+
+     ```bash
+     ollama list
+     ```
+
+      ![ollama-list](screenshots/21.png)
+
 ---
 
-### Phase 2: Database and AI Initialization
+### Phase 2: Database Initialization
 
 1. **Schema Provisioning**:
    - Access the RDS instance from the Application EC2:
@@ -140,13 +186,6 @@ graph TD
      ```sql
      CREATE DATABASE bankappdb;
      EXIT;
-     ```
-
-2. **Ollama Verification**:
-   - Verify the AI engine is responsive and the model is pulled in `AI engine EC2`:
-
-     ```bash
-     ollama list
      ```
 
 ---
