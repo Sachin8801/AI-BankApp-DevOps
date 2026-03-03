@@ -8,6 +8,9 @@ RUN chmod +x mvnw && ./mvnw clean package -DskipTests -B
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+# Pull latest security patches for OS libraries
+RUN apk update && apk upgrade --no-cache
+
 # Create a non-root user for security (Alpine uses addgroup/adduser instead of groupadd/useradd)
 RUN addgroup -S devsecops && adduser -S -G devsecops devsecops
 USER devsecops
