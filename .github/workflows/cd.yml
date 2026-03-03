@@ -78,11 +78,11 @@ jobs:
     needs: deploy
     steps:
       - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.13.0
-        continue-on-error: true  # ZAP internal artifact upload has a known naming bug
+        uses: zaproxy/action-baseline@v0.15.0
+        continue-on-error: true  # Workaround for ZAP's internal artifact upload bug
         with:
           target: 'http://${{ secrets.EC2_HOST }}:8080'
-          artifact_name: zap-scan-results
+          artifact_name: zapreport
           fail_action: false
           allow_issue_writing: false
 
