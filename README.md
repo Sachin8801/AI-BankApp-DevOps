@@ -76,8 +76,9 @@ This project is being built step-by-step:
 ---
 
 ## 📸 Screenshots
+- Docker Containers creations and testing.
+   <img width="3840" height="1176" alt="image" src="https://github.com/user-attachments/assets/a3a3d134-3f34-460f-b697-f4614e15238e" />
 
-*(Will be updated as the project progresses)*
 
 ---
 
