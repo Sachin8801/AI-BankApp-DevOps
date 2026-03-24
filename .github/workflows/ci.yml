@@ -1,8 +1,8 @@
 name: CIpipeline-bankapp
 
 on:
-  workflow:
-    - dispatch
+  workflow_disptach:
+  
 
 
 jobs:
