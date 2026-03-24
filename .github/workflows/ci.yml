@@ -51,14 +51,14 @@ jobs:
       # 6) Building the Docker image 
 
       - name: Build docker image 
-        run: docker build -t bank-app:latest .
+        run: docker build -t ${{ vars.DOCKER_USERNAME }}/bankapp:latest .
 
 
       # 7) Scan Docker Image
       - name: Run Trivy Image Scan
         uses: aquasecurity/trivy-action@0.35.0
         with:
-          image-ref: bankapp:latest
+          image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:latest
           format: table
           exit-code: '0'
           severity: CRITICAL,HIGH
@@ -71,12 +71,7 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 9) Tag Image
-      
-      - name: Tag Docker Image
-        run: docker tag bankapp:latest ${{ vars.DOCKER_USERNAME }}/bankapp:latest
-
-      # 10) Push Image
+      # 9) Push Image
       
       - name: Push Docker Image
         run: docker push ${{ vars.DOCKER_USERNAME }}/bankapp:latest
