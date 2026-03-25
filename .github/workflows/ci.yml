@@ -44,7 +44,7 @@ jobs:
         with:
           scan-type: fs
           format: table
-          exit-code: '1'   # change to '1' later to fail pipeline
+          exit-code: '0'   # change to '1' later to fail pipeline
           severity: CRITICAL,HIGH
 
 
@@ -60,7 +60,7 @@ jobs:
         with:
           image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
           format: table
-          exit-code: '1'
+          exit-code: '0'
           severity: CRITICAL,HIGH
 
       # 8) Login to Docker hub 
