@@ -84,6 +84,8 @@ This project is being built step-by-step:
 ## 📸 Screenshots
 - Docker Containers creations and testing.
    <img width="3840" height="1176" alt="image" src="https://github.com/user-attachments/assets/a3a3d134-3f34-460f-b697-f4614e15238e" />
+- CICD Github actions
+  <img width="1854" height="1003" alt="image" src="https://github.com/user-attachments/assets/d1c9a3ba-ac63-42ca-8b55-7dfe2f465216" />
 
 
 ---
