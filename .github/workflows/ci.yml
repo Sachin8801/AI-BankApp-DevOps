@@ -44,23 +44,23 @@ jobs:
         with:
           scan-type: fs
           format: table
-          exit-code: '0'   # change to '1' later to fail pipeline
+          exit-code: '1'   # change to '1' later to fail pipeline
           severity: CRITICAL,HIGH
 
 
       # 6) Building the Docker image 
 
       - name: Build docker image 
-        run: docker build -t ${{ vars.DOCKER_USERNAME }}/bankapp:latest .
+        run: docker build -t ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} .
 
 
       # 7) Scan Docker Image
       - name: Run Trivy Image Scan
         uses: aquasecurity/trivy-action@0.35.0
         with:
-          image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:latest
+          image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
           format: table
-          exit-code: '0'
+          exit-code: '1'
           severity: CRITICAL,HIGH
 
       # 8) Login to Docker hub 
@@ -74,4 +74,4 @@ jobs:
       # 9) Push Image
       
       - name: Push Docker Image
-        run: docker push ${{ vars.DOCKER_USERNAME }}/bankapp:latest
+        run: docker push ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
