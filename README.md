@@ -1,5 +1,11 @@
 # AI Banking Application – DevOps Implementation 🚀
 
+![CI Pipeline](https://github.com/Sachin8801/AI-BankApp-DevOps/actions/workflows/ci.yml/badge.svg)
+![Docker](https://img.shields.io/badge/docker-enabled-blue)
+![Security](https://img.shields.io/badge/security-trivy-green)
+![Java](https://img.shields.io/badge/java-21-orange)
+
+---
 This project demonstrates an end-to-end DevOps and DevSecOps implementation for an AI Banking Application.
 
 The goal is to simulate a real-world production workflow by integrating containerization, CI/CD automation, security scanning, and Kubernetes-based deployment.
