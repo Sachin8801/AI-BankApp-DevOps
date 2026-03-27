@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bankapp-deployment
+  namespace: bank-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bankapp
+  template:
+    metadata:
+      labels:
+        app: bankapp
+    spec:
+      containers:
+      - name: bankapp
+        image: sachin8801/bankapp:latest
+
+        ports:
+          - containerPort: 8080
+
+        env:
+          - name: MYSQL_HOST
+            value: mysql-service
+
+          - name: MYSQL_PORT
+            value: "3306"
+
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: bankapp-configmap
+                key: MYSQL_DATABASE
+
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: bankapp-secrets
+                key: MYSQL_USER
+
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bankapp-secrets
+                key: MYSQL_PASSWORD
+
+          - name: OLLAMA_URL
+            value: http://ollama-service:11434
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
