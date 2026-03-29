@@ -3,19 +3,33 @@ kind: Deployment
 metadata:
   name: bankapp-deployment
   namespace: bank-app
+  labels:
+    app: bankapp
+    tier: backend
+
 spec:
-  replicas: 1
+  replicas: 2
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
   selector:
     matchLabels:
       app: bankapp
+
   template:
     metadata:
       labels:
         app: bankapp
+
     spec:
       containers:
       - name: bankapp
-        image: sachin8801/bankapp:latest
+        image: sachin8801/bankapp:v1
+        imagePullPolicy: Always
 
         ports:
           - containerPort: 8080
@@ -55,3 +69,28 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
+
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 40
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
