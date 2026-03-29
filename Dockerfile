@@ -1,24 +1,12 @@
-# The base line for the code- Java
-
-FROM eclipse-temurin:21-jdk-alpine
-
-# Create the work directory for the code 
-
+# Stage 1: Build
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /app
-
-# Copying the code to the directory 
-
 COPY . .
+RUN mvn clean package -DskipTests
 
-# Installing libraries for Maven 
+# Stage 2: Run
+FROM eclipse-temurin:21-jdk-jammy
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 
-RUN chmod +x mvnw && ./mvnw clean package -DskipTests
-
-# Running the command for entry to the app also can be done with ENTRYPOINT ["sh", "cd", "java -jar target/*.jar"]
-
-ENTRYPOINT ["sh","-c","java -jar target/*.jar"]
-
-# Exposing the port 
-
-EXPOSE 8080
-
+ENTRYPOINT ["java", "-jar", "app.jar"]
