@@ -1,3 +1,3 @@
 output "public_ip" {
-  value = aws_eip.k8s_eip.public_ip
+  value = aws_instance.k8s_server.public_ip
 }
