@@ -61,20 +61,20 @@ jobs:
     - name: Push Docker Image
       run: docker push ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
 
-  #  - name: Set kubeconfig               (Terraform integration in progress)
-   #   run: |
-    #    mkdir -p $HOME/.kube
-     #   echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+    - name: Set kubeconfig               (Terraform integration in progress)
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
-  #  - name: Deploy to Kubernetes
-   #   run: |
-    #    kubectl set image deployment/bankapp-deployment bankapp=${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} -n bank-app
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/bankapp-deployment bankapp=${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} -n bank-app
 
-  #  - name: Verify Deployment
-   #   run: |
-    #    kubectl rollout status deployment/bankapp-deployment -n bank-app
+    - name: Verify Deployment
+      run: |
+        kubectl rollout status deployment/bankapp-deployment -n bank-app
 
-  #  - name: Rollback on Failure
-   #   if: failure()
-    #  run: |
-     #   kubectl rollout undo deployment/bankapp-deployment -n bank-app
+    - name: Rollback on Failure
+      if: failure()
+      run: |
+        kubectl rollout undo deployment/bankapp-deployment -n bank-app
