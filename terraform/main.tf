@@ -1,38 +1,6 @@
 provider "aws" {
   region = "ap-south-1"
 }
-resource "aws_eip" "k8s_eip" {
-  instance = aws_instance.k8s_server.id
-  domain   = "vpc"
-}
-resource "aws_instance" "k8s_server" {
-  ami           = "ami-0f58b397bc5c1f2e8" # Ubuntu 22.04 (update if needed)
-  instance_type = "t2.medium"
-  key_name      = var.key_name
-
-  vpc_security_group_ids = [aws_security_group.k8s_sg.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              apt update -y
-              apt install -y curl
-
-              # Install Docker
-              apt install -y docker.io
-              systemctl enable docker
-              systemctl start docker
-
-              # Install k3s
-              curl -sfL https://get.k3s.io | sh -
-
-              # Give access
-              chmod 644 /etc/rancher/k3s/k3s.yaml
-              EOF
-
-  tags = {
-    Name = "bankapp-k8s-server"
-  }
-}
 
 resource "aws_security_group" "k8s_sg" {
   name = "k8s-sg"
@@ -64,4 +32,30 @@ resource "aws_security_group" "k8s_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_instance" "k8s_server" {
+  ami           = "ami-0f58b397bc5c1f2e8"
+  instance_type = "t2.medium"
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              apt update -y
+              apt install -y docker.io curl
+              systemctl start docker
+              systemctl enable docker
+
+              # Install K3s
+              curl -sfL https://get.k3s.io | sh -
+
+              # Wait for cluster
+              sleep 60
+              EOF
+}
+
+output "public_ip" {
+  value = aws_instance.k8s_server.public_ip
 }
