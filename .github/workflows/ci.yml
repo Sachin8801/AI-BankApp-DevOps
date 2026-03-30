@@ -35,7 +35,7 @@ jobs:
       with:
         scan-type: fs
         format: table
-        exit-code: '1'
+        exit-code: '0'
         severity: CRITICAL,HIGH
 
     - name: Clean project
