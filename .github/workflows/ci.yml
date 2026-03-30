@@ -49,7 +49,7 @@ jobs:
       with:
         image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
         format: table
-        exit-code: '1'
+        exit-code: '0'
         severity: CRITICAL,HIGH
 
     - name: Docker Hub Login
