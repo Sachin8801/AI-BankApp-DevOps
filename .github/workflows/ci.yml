@@ -96,9 +96,10 @@ jobs:
         mv kubeconfig $HOME/.kube/config
     - name: Deploy
       run: |
-        kubectl apply -f k8s/
+        kubectl apply -f setup-k8s/
         kubectl set image deployment/bankapp-deployment \
         bankapp=${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} -n bank-app
 
     - name: Verify
       run: kubectl rollout status deployment/bankapp-deployment -n bank-app
+      
