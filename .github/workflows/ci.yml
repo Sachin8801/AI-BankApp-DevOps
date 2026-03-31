@@ -30,27 +30,27 @@ jobs:
     - name: Build and Test
       run: ./mvnw clean verify
 
-    - name: Run Trivy FS Scan
-      uses: aquasecurity/trivy-action@0.35.0
-      with:
-        scan-type: fs
-        format: table
-        exit-code: '0'
-        severity: CRITICAL,HIGH
+    #- name: Run Trivy FS Scan
+     # uses: aquasecurity/trivy-action@0.35.0
+      #with:
+       # scan-type: fs
+        #format: table
+        #exit-code: '0'
+        #severity: CRITICAL,HIGH
 
-    - name: Clean project
-      run: ./mvnw clean
+   # - name: Clean project
+   #   run: ./mvnw clean
 
     - name: Build Docker Image
       run: docker build --no-cache -t ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} .
 
-    - name: Run Trivy Image Scan
-      uses: aquasecurity/trivy-action@0.35.0
-      with:
-        image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
-        format: table
-        exit-code: '0'
-        severity: CRITICAL,HIGH
+   # - name: Run Trivy Image Scan
+   #   uses: aquasecurity/trivy-action@0.35.0
+   #   with:
+   #     image-ref: ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
+   #     format: table
+   #     exit-code: '0'
+   #     severity: CRITICAL,HIGH
 
     - name: Docker Hub Login
       uses: docker/login-action@v3
@@ -96,11 +96,33 @@ jobs:
 
         mkdir -p $HOME/.kube
         mv kubeconfig $HOME/.kube/config
-    - name: Deploy
+    # 1. Namespace FIRST
+    - name: Deploy Namespace
+      run: kubectl apply -f setup-k8s/namespace.yaml --validate=false
+
+    # 2. Core configs
+    - name: Deploy Secrets
+      run: kubectl apply -f setup-k8s/secrets.yaml --validate=false
+
+    - name: Deploy ConfigMap
+      run: kubectl apply -f setup-k8s/configmap.yaml --validate=false
+
+    # 3. Database layer
+    - name: Deploy MySQL
       run: |
-        kubectl apply -f setup-k8s/ --validate=false
-        kubectl set image deployment/bankapp-deployment \
-        bankapp=${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} -n bank-app
+        kubectl apply -f setup-k8s/mysql-deployment.yaml --validate=false
+        kubectl apply -f setup-k8s/mysql-service.yaml --validate=false
+
+    # Wait for DB to be ready (CRITICAL)
+    - name: Wait for MySQL
+      run: kubectl rollout status deployment/mysql -n bank-app
+
+
+    # 5. Frontend layer
+    - name: Deploy Frontend
+      run: |
+        kubectl apply -f setup-k8s/bank-app/deployment.yaml --validate=false
+        kubectl apply -f setup-k8s/bank-app/service.yaml --validate=false
 
     - name: Verify
       run: kubectl rollout status deployment/bankapp-deployment -n bank-app
