@@ -115,7 +115,7 @@ jobs:
 
     # Wait for DB to be ready (CRITICAL)
     - name: Wait for MySQL
-      run: kubectl rollout status deployment/mysql -n bank-app
+      run: kubectl rollout status deployment/mysql-deployment -n bank-app
 
 
     # 5. Frontend layer
