@@ -59,8 +59,8 @@ spec:
                 name: bankapp-secrets
                 key: MYSQL_PASSWORD
 
-          - name: OLLAMA_URL
-            value: http://ollama-service:11434
+          #- name: OLLAMA_URL
+           # value: http://ollama-service:11434
 
         resources:
           requests:
