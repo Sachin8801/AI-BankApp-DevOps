@@ -110,14 +110,24 @@ jobs:
     # 3. Database layer
     - name: Deploy MySQL
       run: |
+        kubectl apply -f setup-k8s/mysql/pvc.yaml --validate=false
         kubectl apply -f setup-k8s/mysql/deployment.yaml --validate=false
         kubectl apply -f setup-k8s/mysql/service.yaml --validate=false
 
     # Wait for DB to be ready (CRITICAL)
     - name: Wait for MySQL
       run: kubectl rollout status deployment/mysql-deployment -n bank-app
+      
+    # 3. Deploy Ollama- AI Tiny Lama 
+    - name: Deploy Ollama
+      run: |
+        kubectl apply -f setup-k8s/ollama/deployment.yaml --validate=false
+        kubectl apply -f setup-k8s/ollama/service.yaml --validate=false
 
-
+    # Wait for Ollama to be ready (CRITICAL)
+    - name: Wait for Ollama
+      run: kubectl rollout status deployment/ollama -n bank-app
+      
     # 5. Frontend layer
     - name: Deploy Frontend
       run: |
