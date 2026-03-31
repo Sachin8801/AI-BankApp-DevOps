@@ -86,14 +86,14 @@ jobs:
     - name: Fetch kubeconfig
       run: |
         sleep 60
-        scp -o StrictHostKeyChecking=no -i key.pem \
-        ubuntu@${{ steps.tf.outputs.ip }}:/etc/rancher/k3s/k3s.yaml kubeconfig
+
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ steps.tf.outputs.ip }} \
+        "sudo cat /etc/rancher/k3s/k3s.yaml" > kubeconfig
 
         sed -i "s/127.0.0.1/${{ steps.tf.outputs.ip }}/g" kubeconfig
 
         mkdir -p $HOME/.kube
         mv kubeconfig $HOME/.kube/config
-
     - name: Deploy
       run: |
         kubectl apply -f k8s/
