@@ -61,8 +61,9 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker Image
-      run: docker push ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
-      run: docker push sachin8801/bankapp:v1
+      run: |
+        docker push ${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }}
+        docker push sachin8801/bankapp:v1
       
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
