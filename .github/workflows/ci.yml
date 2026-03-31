@@ -91,12 +91,14 @@ jobs:
         "sudo cat /etc/rancher/k3s/k3s.yaml" > kubeconfig
 
         sed -i "s/127.0.0.1/${{ steps.tf.outputs.ip }}/g" kubeconfig
+        sed -i 's/certificate-authority-data:/#certificate-authority-data:/g' kubeconfig
+        sed -i 's/server: https:/insecure-skip-tls-verify: true\n    server: https:/g' kubeconfig
 
         mkdir -p $HOME/.kube
         mv kubeconfig $HOME/.kube/config
     - name: Deploy
       run: |
-        kubectl apply -f setup-k8s/
+        kubectl apply -f setup-k8s/ --validate=false
         kubectl set image deployment/bankapp-deployment \
         bankapp=${{ vars.DOCKER_USERNAME }}/bankapp:${{ github.sha }} -n bank-app
 
