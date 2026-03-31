@@ -110,8 +110,8 @@ jobs:
     # 3. Database layer
     - name: Deploy MySQL
       run: |
-        kubectl apply -f setup-k8s/mysql-deployment.yaml --validate=false
-        kubectl apply -f setup-k8s/mysql-service.yaml --validate=false
+        kubectl apply -f setup-k8s/mysql/deployment.yaml --validate=false
+        kubectl apply -f setup-k8s/mysql/service.yaml --validate=false
 
     # Wait for DB to be ready (CRITICAL)
     - name: Wait for MySQL
