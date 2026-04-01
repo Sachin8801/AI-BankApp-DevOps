@@ -1,104 +1,146 @@
 # 🚀 Next-Gen Banking Platform with Local LLM Integration
+---
 
-![CI Pipeline](https://github.com/Sachin8801/AI-BankApp-DevOps/actions/workflows/ci.yml/badge.svg)
-![Docker](https://img.shields.io/badge/docker-enabled-blue)
-![Security](https://img.shields.io/badge/security-trivy-green)
-![Java](https://img.shields.io/badge/java-21-orange)
+## 🧠 Project Summary
 
-## 📌 Overview
+A **production-style, end-to-end DevOps implementation** of a cloud-native banking platform, designed to simulate real-world deployment pipelines used in modern enterprises.
 
-End-to-end DevOps implementation of a **3-tier cloud-native application**, fully automated using CI/CD and Infrastructure as Code.
+This project demonstrates:
+
+* Full CI/CD automation
+* Infrastructure provisioning using Terraform
+* Kubernetes-based microservice deployment
+* Secure and scalable architecture design
 
 ---
 
-## 🏗️ Architecture
+## ⚡ Quick Start (Run in <5 Minutes)
 
-* **Frontend + Backend**: Spring Boot (Dockerized)
-* **Database**: MySQL (Kubernetes Deployment)
-* **Orchestration**: Kubernetes (K3s)
-* **CI/CD**: GitHub Actions
-* **Infrastructure**: Terraform (AWS EC2)
+```bash
+# Clone repository
+git clone https://github.com/Sachin8801/AI-BankApp-DevOps.git
+cd AI-BankApp-DevOps
 
----
+# Build and run locally
+docker-compose up --build
 
-## 🔄 CI/CD Pipeline Flow
-
-```
-1. Code Push (GitHub)
-2. Build & Test (Maven)
-3. Docker Build & Tag
-4. Push Image to Docker Hub
-5. Terraform → Provision EC2 + Security Groups + EIP
-6. K3s Cluster Setup
-7. Kubernetes Deployment
-8. Service Exposure (NodePort)
+# OR deploy to Kubernetes
+kubectl apply -f k8s/dev/
 ```
 
----
-
-## ☁️ Infrastructure (Terraform)
-
-* EC2 instance provisioning
-* Security group configuration:
-
-  * SSH (22)
-  * Kubernetes API (6443)
-  * App Port (30007)
-* Elastic IP for stable access
-
----
-
-## ☸️ Kubernetes Setup
-
-* Namespace isolation (`bank-app`)
-* ConfigMap + Secrets
-* MySQL Deployment + Service
-* Application Deployment + Service
-
----
-
-## ⚠️ Challenges & Fixes
-
-### 🔴 ImagePullBackOff
-
-* Cause: Image tag mismatch
-* Fix: Unified tagging with `${{ github.sha }}`
-
----
-
-### 🔴 TLS Certificate Error
-
-* Cause: K3s internal IP mismatch
-* Fix: Modified kubeconfig + TLS bypass
-
----
-
-### 🔴 Kubernetes API Timeout
-
-* Cause: Port 6443 blocked
-* Fix: Updated AWS Security Group
-
----
-
-### 🔴 PVC Pending
-
-* Cause: Missing storage binding
-* Fix: Correct PVC configuration
-
----
-
-### 🔴 DiskPressure
-
-* Cause: Heavy workloads (Ollama)
-* Fix: Optimized resource usage
-
----
-
-## 🌐 Access Application
+📌 Access:
 
 ```
 http://<EC2-Public-IP>:30007
 ```
+
+---
+
+## 🏗️ Architecture Overview
+
+### 🔹 System Design
+
+* **Frontend + Backend** → Spring Boot (Containerized)
+* **Database** → MySQL (Persistent storage)
+* **Orchestration** → Kubernetes (K3s lightweight cluster)
+* **CI/CD** → GitHub Actions
+* **Infrastructure** → Terraform (AWS EC2)
+
+---
+
+## 📊 Architecture Diagram
+
+> *(Add your draw.io / Excalidraw diagram here — this is critical for recruiter impact)*
+
+---
+
+## 🔄 CI/CD Pipeline (Automated Workflow)
+
+```text
+Code Push → Build → Test → Security Scan → Docker Build → Push → Infra Provision → K8s Deploy
+```
+
+### Pipeline Stages:
+
+1. Maven Build & Unit Testing
+2. Docker Image Build & Tagging (`github.sha`)
+3. Image Push to Docker Hub
+4. Terraform Execution (Provision EC2 + Networking)
+5. K3s Cluster Setup
+6. Kubernetes Deployment
+7. Service Exposure (NodePort)
+
+---
+
+## ☁️ Infrastructure as Code (Terraform)
+
+Provisioned Resources:
+
+* EC2 Instance (K3s Node)
+* Security Groups:
+
+  * SSH (22)
+  * Kubernetes API (6443)
+  * Application Port (30007)
+* Elastic IP for stable access
+
+---
+
+## ☸️ Kubernetes Deployment
+
+* Namespace isolation: `bank-app`
+* ConfigMap & Secrets management
+* MySQL Deployment + Service
+* Application Deployment + Service
+* NodePort exposure
+
+---
+
+## 🔐 Security Implementation
+
+* Image vulnerability scanning using **Trivy**
+* Secrets handled via Kubernetes Secrets
+* Network access restricted via AWS Security Groups
+
+---
+
+## 📈 Scalability & Production Considerations
+
+* Designed for horizontal scaling via Kubernetes
+* Supports future integration with:
+
+  * HPA (Horizontal Pod Autoscaler)
+  * Ingress Controller (NGINX)
+  * Monitoring stack (Prometheus + Grafana)
+
+---
+
+## ⚠️ Challenges & Engineering Fixes
+
+### 🔴 ImagePullBackOff
+
+* Root Cause: Image tag mismatch
+* Solution: Unified tagging using `${{ github.sha }}`
+
+### 🔴 TLS Certificate Error
+
+* Root Cause: K3s internal IP mismatch
+* Solution: kubeconfig modification + TLS bypass
+
+### 🔴 Kubernetes API Timeout
+
+* Root Cause: Port 6443 blocked
+* Solution: Updated AWS Security Group rules
+
+### 🔴 PVC Pending
+
+* Root Cause: Storage binding issue
+* Solution: Correct PersistentVolumeClaim configuration
+
+### 🔴 DiskPressure
+
+* Root Cause: Resource-heavy workloads (LLM/Ollama)
+* Solution: Optimized container resource allocation
 
 ---
 
@@ -114,37 +156,65 @@ http://<EC2-Public-IP>:30007
 
 ---
 
-## ✅ Result
+## 📂 Repository Structure
 
-* Fully automated deployment pipeline
-* Infrastructure + application lifecycle managed end-to-end
-* Production-style DevOps implementation
+```
+.
+├── app/                # Application source code
+├── docker/             # Docker configurations
+├── k8s/                # Kubernetes manifests (dev/prod ready)
+├── terraform/          # Infrastructure as Code
+├── .github/workflows/  # CI/CD pipelines
+└── docs/               # Architecture & documentation
+```
 
 ---
 
-## 📸 Screenshots
-- Docker Containers creations and testing.
-   <img width="3840" height="1176" alt="image" src="https://github.com/user-attachments/assets/a3a3d134-3f34-460f-b697-f4614e15238e" />
-- CICD Github actions
-  <img width="1854" height="1003" alt="image" src="https://github.com/user-attachments/assets/d1c9a3ba-ac63-42ca-8b55-7dfe2f465216" />
+## 📸 Project Screenshots
 
+### Docker Containers
+
+<img width="3840" height="1176" src="https://github.com/user-attachments/assets/a3a3d134-3f34-460f-b697-f4614e15238e" />
+
+### CI/CD Pipeline
+
+<img width="1854" height="1003" src="https://github.com/user-attachments/assets/d1c9a3ba-ac63-42ca-8b55-7dfe2f465216" />
+
+---
+
+## 🧩 Key Learnings
+
+* Real-world CI/CD pipeline design
+* Debugging Kubernetes production issues
+* Infrastructure automation with Terraform
+* Secure DevOps practices implementation
+
+---
+
+## 🚀 Future Enhancements
+
+* Add Ingress Controller (NGINX)
+* Implement HPA auto-scaling
+* Integrate Prometheus & Grafana monitoring
+* Move to managed Kubernetes (EKS)
 
 ---
 
 ## 📬 Connect With Me
 
-- GitHub: https://github.com/Sachin8801  
-- LinkedIn: https://linkedin.com/in/sachin-singh-8166b3134
-
+* GitHub: https://github.com/Sachin8801
+* LinkedIn: https://linkedin.com/in/sachin-singh-8166b3134
 
 ---
 
 ## 🤝 Credits
 
-Base application sourced from an open-source repository:  
+Base application:
 https://github.com/TrainWithShubham/AI-BankApp-DevOps
 
-Enhanced with DevOps practices including containerization, CI/CD, security scanning, and Kubernetes deployment.
+Enhanced with:
 
-
-
+* CI/CD Automation
+* Kubernetes Deployment
+* Security Scanning
+* Infrastructure as Code
