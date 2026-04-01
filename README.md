@@ -50,7 +50,8 @@ http://<EC2-Public-IP>:30007
 
 ## 📊 Architecture Diagram
 
-> *(Add your draw.io / Excalidraw diagram here — this is critical for recruiter impact)*
+<img width="1083" height="723" alt="image" src="https://github.com/user-attachments/assets/732682f0-e09b-4890-b77c-d0003a1bc02a" />
+
 
 ---
 
